@@ -1,0 +1,155 @@
+﻿@page "/"
+
+@using System
+@using System.Reactive.Linq;
+@using System.Reactive.Subjects;
+<PageTitle>ランダム九九</PageTitle>
+@* <Timer @ref="timer" TimeElapsed="TimerElapsed" /> *@
+<div class="container">
+    @if (Started)
+    {
+        if (Ended)
+        {
+            <card class="quection">終了!</card>
+        }
+        else
+        {
+            <card class="quection" @onclick="NextQuestion">@Question</card>
+        }
+        <p>前の問題の答え @Answer</p>
+        <div class="split">
+            <card class="timer">@ElapsedTimeStr</card>
+            <p>残り @RemainingNumber</p>
+        </div>
+        <button class="btn-light start-button noselect" @onclick="Init">最初から</button>
+    }
+    else
+    {
+        <p>九九の問題をランダムで表示します</p>
+        <button class="btn-primary start-button" @onclick="Start">スタート</button>
+    }
+</div>
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1em;
+    }
+
+    .split {
+        margin-top: 1em;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 80%;
+        justify-content: space-between;
+    }
+
+    button {
+        font-size: 50px;
+        border-radius: 0.25em;
+    }
+
+    .start-button {
+        width: fit-content;
+    }
+
+    p {
+        font-size: 20px;
+    }
+
+    card {
+        text-align: center;
+        /* box-sizing: border-box; */
+        border-radius: 0.25em;
+        user-select: none;
+    }
+
+    card.quection {
+        background-color: lightgray;
+        font-size: 80px;
+        width: 80%;
+        height: auto;
+        padding: 0.5em;
+    }
+
+    card.timer {
+        background-color: darkgray;
+        font-size: 40px;
+        width: fit-content;
+        height: auto;
+        padding: 0.1em 1em;
+    }
+</style>
+@code {
+    string Question => $"{CurrentQuestion.Item1} × {CurrentQuestion.Item2}";
+    int Answer = 0;
+    int[] numbers = Enumerable.Range(1, 9).ToArray();
+    Random random = new Random();
+    bool Started = true;
+    IDisposable _timer;
+    List<(int, int)> Questions = [];
+    List<(int, int)> ShuffledQuestions = [];
+    int Index = 0;
+    (int, int) CurrentQuestion => ShuffledQuestions[Index];
+    // string ElapsedTimeStr => ElapsedSeconds.ToString(new TimeSpan(0, 0, ElapsedSeconds).ToString(@"mm:ss"));
+    static string ElapsedTimeStr = "00:00";
+    static int ElapsedSeconds = 0;
+    int RemainingNumber => Questions.Count - Index - 1;
+    bool Ended = false;
+
+    protected override void OnInitialized()
+    {
+        Init();
+    }
+    void Init()
+    {
+        Stop();
+        ElapsedSeconds = 0;
+        Index = 0;
+        Started = false;
+        Ended = false;
+        void InitTable()
+        {
+            Questions = [];
+            for (int i = 1; i <= 9; i++)
+            {
+                for (int j = 1; j <= 9; j++)
+                {
+                    Questions.Add((i, j));
+                }
+            }
+        }
+        InitTable();
+        Shuffle();
+    }
+    void Shuffle()
+    {
+        ShuffledQuestions = Questions.OrderBy(i => Guid.NewGuid()).ToList();
+    }
+    void Start()
+    {
+        var interval = 1;
+        _timer = Observable.Interval(TimeSpan.FromSeconds(interval)).Subscribe(n =>
+        {
+            ElapsedSeconds++;
+            ElapsedTimeStr = new TimeSpan(0, 0, ElapsedSeconds).ToString(@"mm\:ss");
+            StateHasChanged();
+        });
+        Started = true;
+    }
+    void Stop() => _timer?.Dispose();
+
+    void NextQuestion()
+    {
+        if (Index + 1 >= Questions.Count)
+        {
+            Stop();
+            Ended = true;
+            return;
+        }
+        Answer = CurrentQuestion.Item1 * CurrentQuestion.Item2;
+        Index++;
+    }
+}

@@ -1,0 +1,9 @@
+.vs
+bin
+obj
+~$*
+.~lock*
+/$tf
+*.lock
+*.cache
+*.exe
