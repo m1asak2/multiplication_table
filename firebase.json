@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "bin/Release/net8.0/publish/wwwroot",
+    "public": "multiplication_table/multiplication_table/MultiplicationTable/bin/Release/net8.0/publish/",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
