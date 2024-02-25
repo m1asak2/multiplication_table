@@ -22,7 +22,7 @@ jobs:
         run: dotnet restore
       - name: build
         run: dotnet publish -c Release
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_MULTIPLICATION_TABLE_415209 }}"
