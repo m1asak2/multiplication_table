@@ -10,7 +10,7 @@
     {
         if (Ended)
         {
-            <card class="quection">終了!</card>
+            <p>終了!</p>
         }
         else
         {
@@ -18,15 +18,21 @@
         }
         <p>前の問題の答え @Answer</p>
         <div class="split">
+            <card style="background-color:none;" />
             <card class="timer">@ElapsedTimeStr</card>
-            <p>残り @RemainingNumber</p>
+            <p>@RemainingNumberStr</p>
         </div>
-        <button class="btn-light start-button noselect" @onclick="Init">最初から</button>
+        if (Ended)
+        {
+            <img src="img/kuku_end.png" />
+        }
+        <button class="btn-warning start-button noselect" @onclick="Init">最初から</button>
     }
     else
     {
         <p>九九の問題をランダムで表示します</p>
         <button class="btn-primary start-button" @onclick="Start">スタート</button>
+        <img src="img/kuku_start.png" />
     }
 </div>
 <style>
@@ -46,9 +52,13 @@
         justify-content: space-between;
     }
 
+    img {
+        width: 100%;
+    }
+
     button {
         font-size: 50px;
-        border-radius: 0.25em;
+        border-radius: 0.25rem;
     }
 
     .start-button {
@@ -59,25 +69,27 @@
         font-size: 20px;
     }
 
+
     card {
         text-align: center;
         /* box-sizing: border-box; */
-        border-radius: 0.25em;
+        border-radius: 0.25rem;
         user-select: none;
     }
 
     card.quection {
-        background-color: lightgray;
-        font-size: 80px;
+        background-color: #5E1675;
+        font-size: 5rem;
+        color: white;
         width: 80%;
         height: auto;
-        padding: 0.5em;
+        padding: 0.5rem;
     }
 
     card.timer {
-        background-color: darkgray;
-        font-size: 40px;
+        font-size: 2rem;
         width: fit-content;
+        background-color: lightgray;
         height: auto;
         padding: 0.1em 1em;
     }
@@ -96,7 +108,21 @@
     // string ElapsedTimeStr => ElapsedSeconds.ToString(new TimeSpan(0, 0, ElapsedSeconds).ToString(@"mm:ss"));
     static string ElapsedTimeStr = "00:00";
     static int ElapsedSeconds = 0;
-    int RemainingNumber => Questions.Count - Index - 1;
+    string RemainingNumberStr
+    {
+        get
+        {
+            if (Questions.Count - Index - 1 != 0)
+            {
+                return $"残り{Questions.Count - Index - 1}";
+            }
+            else if (Ended)
+            {
+                return string.Empty;
+            }
+            return "ラスト!";
+        }
+    }
     bool Ended = false;
 
     protected override void OnInitialized()
@@ -108,6 +134,7 @@
         Stop();
         ElapsedSeconds = 0;
         Index = 0;
+        ElapsedTimeStr = "00:00";
         Started = false;
         Ended = false;
         void InitTable()
