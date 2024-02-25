@@ -1,2 +1,2 @@
 # multiplication_table
-九九
+ランダム九九Webアプリ
