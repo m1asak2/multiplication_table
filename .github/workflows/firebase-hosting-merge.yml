@@ -14,17 +14,17 @@ jobs:
         dotnet-version: ["8.0.x"]
     steps:
       - uses: actions/checkout@v4
-      - run: pwd
-      # - name: Setup dotnet
-      #   uses: actions/setup-dotnet@v3
-      #   with:
-      #     dotnet-version: ${{ matrix.dotnet-version }}
-      # - name: Install dependencies
-      #   run: dotnet restore
-      # - run: dotnet publish -c Release
-      # - uses: FirebaseExtended/action-hosting-deploy@v0
-      #   with:
-      #     repoToken: "${{ secrets.GITHUB_TOKEN }}"
-      #     firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_MULTIPLICATION_TABLE_415209 }}"
-      #     channelId: live
-      #     projectId: multiplication-table-415209
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Install dependencies
+        run: dotnet restore
+      - name: build
+        run: dotnet publish -c Release
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_MULTIPLICATION_TABLE_415209 }}"
+          channelId: live
+          projectId: multiplication-table-415209
